@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exoplanet Explorer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #000;
+            color: #fff;
+        }
+        #game-container {
+            text-align: center;
+        }
+        #planets-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            height: 150px;
+            margin: 20px 0;
+            position: relative;
+            overflow-x: auto;
+            padding: 10px 0;
+        }
+        .planet {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin: 0 10px;
+            transition: all 0.5s ease-in-out;
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+        .planet.active {
+            transform: scale(1.2);
+            box-shadow: 0 0 20px #fff;
+        }
+        #question-container {
+            margin-top: 20px;
+        }
+        .answer-option {
+            display: block;
+            margin: 10px auto;
+            padding: 10px;
+            width: 80%;
+            max-width: 300px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .answer-option:hover {
+            background-color: #555;
+        }
+        #next-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #next-button:hover {
+            background-color: #45a049;
+        }
+        #planets-container{
+            animation-name: myAnimation;
+            animation-duration: 40s;
+            animation-direction: normal; /* Apply the animation-direction here */
+            animation-iteration-count: infinite;
+            overflow: hidden;
+            gap: 100px;
+        
+        }
+        @keyframes myAnimation {
+            from {
+                transform: translateX(0%);
+            }
+            to {
+                transform: translateX(100%);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <h1>Exoplanet Explorer</h1>
+        <div id="planets-container"></div>
+        <div id="planet-info"></div>
+        <div id="question-container"></div>
+        <button id="next-button" style="display: none;">Next Planet</button>
+    <script >
+       const exoplanets = [
+            {
+    name: "Kepler-16b",
+    description: "Circumbinary planet - orbits two stars Kepler-16b, often nicknamed Tatooine due to its resemblance to the fictional planet from Star Wars, orbits two stars—making it the first confirmed planet to do so when it was discovered in 2011. This fascinating exoplanet is located in the Cygnus constellation, approximately 4,900 light-years away from Earth. It orbits a pair of stars, one of which is Sun-like while the other is a red dwarf, completing its orbit in around 229 days. Despite its impressive size of 1.5 times Earth's radius, Kepler-16b has a mass only about 0.3 times that of Jupiter. The Kepler Space Telescope played a crucial role in discovering this unique world, adding to the growing list of fascinating exoplanets found outside our solar system.",
+    color: "#FFD700",
+    quiz: [
+    { 
+            question: "How many stars does Kepler-16b orbit?",
+            options: ["A) 1", "B) 2", "C) 3", "D) 4"],
+            answer: "B) 2"
+        },
+    { 
+            question: "What is the nickname for Kepler-16b?",
+            options: ["A) Hoth", "B) Tatooine", "C) Endor", "D) Naboo"],
+            answer: "B) Tatooine"
+        },
+        { 
+            question: "In which constellation is Kepler-16b located?",
+            options: ["A) Cygnus", "B) Lyra", "C) Orion", "D) Scorpius"],
+            answer: "A) Cygnus"
+        },
+        { 
+            question: "What is the approximate orbital period of Kepler-16b?",
+            options: ["A) 100 days", "B) 229 days", "C) 365 days", "D) 500 days"],
+            answer: "B) 229 days"
+        },
+        { 
+            question: "Kepler-16b was the first confirmed planet to orbit two stars. In what year was it discovered?",
+            options: ["A) 2010", "B) 2011", "C) 2012", "D) 2013"],
+            answer: "C) 2012"
+        },
+        { 
+            question: "What type of stars does Kepler-16b orbit?",
+            options: ["A) Two Sun-like stars", "B) A Sun-like star and a red dwarf", "C) Two red dwarfs", "D) A blue giant and a white dwarf"],
+            answer: "C) Two red dwarfs"
+        },
+        { 
+            question: "Approximately how far is Kepler-16b from Earth?",
+            options: ["A) 200 light-years", "B) 1,000 light-years", "C) 4,900 light-years", "D) 10,000 light-years"],
+            answer: "C) 4,900 light-years"
+        },
+        { 
+            question: "What is the mass of Kepler-16b compared to Jupiter?",
+            options: ["A) 0.1 Jupiter masses", "B) 0.3 Jupiter masses", "C) 1 Jupiter mass", "D) 3 Jupiter masses"],
+            answer: "B) 0.3 Jupiter masses"
+        },
+        { 
+            question: "What is the radius of Kepler-16b compared to Earth?",
+            options: ["A) Similar to Earth", "B) 1.5 times Earth's radius", "C) 2 times Earth's radius", "D) 5 times Earth's radius"],
+            answer: "B) 1.5 times Earth's radius"
+        },
+        { 
+            question: "Which space telescope was responsible for the discovery of Kepler-16b?",
+            options: ["A) Hubble Space Telescope", "B) Spitzer Space Telescope", "C) Kepler Space Telescope", "D) James Webb Space Telescope"],
+            answer: "C) Kepler Space Telescope"
+        }
+    ]
+},
+          
+
+{
+                name: "TRAPPIST-1e",
+                description: "TRAPPIST-1e is a fascinating Earth-sized exoplanet located about 39 light-years from our planet, nestled in the habitable zone of an ultra-cool dwarf star. This intriguing world orbits its star with an orbital period of approximately 6.1 days and has an equilibrium temperature of around 251 K. Notably, TRAPPIST-1e receives about 60% of the energy that Earth gets from the Sun, making it a prime candidate for potential habitability. With a mass roughly 0.69 times that of Earth, it is quite similar in size, raising questions about its atmosphere and possible conditions for life. This remarkable exoplanet is part of a system that includes seven known planets, all discovered thanks to the Spitzer Space Telescope, showcasing the rich diversity of worlds beyond our solar system.",
+                color: "#4CA3DD",
+                quiz: [
+                {
+    name: "TRAPPIST-1e",
+    description: "Earth-sized exoplanet in the habitable zone of an ultra-cool dwarf star",
+    color: "#4CAF50",
+    quiz: [
+        { 
+            question: "How far is TRAPPIST-1e from Earth in light-years?",
+            options: ["A) 29", "B) 39", "C) 49", "D) 59"],
+            answer: "B) 39"
+        },
+        { 
+            question: "Is TRAPPIST-1e in the habitable zone of its star?",
+            options: ["A) Yes", "B) No", "C) Maybe", "D) Unknown"],
+            answer: "A) Yes"
+        },
+        { 
+            question: "What type of star does TRAPPIST-1e orbit?",
+            options: ["A) Yellow dwarf", "B) Red giant", "C) Ultra-cool dwarf", "D) White dwarf"],
+            answer: "C) Ultra-cool dwarf"
+        },
+        { 
+            question: "Approximately how long is TRAPPIST-1e's orbital period around its star?",
+            options: ["A) 3.2 days", "B) 6.1 days", "C) 12.3 days", "D) 24.5 days"],
+            answer: "B) 6.1 days"
+        },
+        { 
+            question: "What is the approximate equilibrium temperature of TRAPPIST-1e?",
+            options: ["A) 150 K", "B) 251 K", "C) 300 K", "D) 350 K"],
+            answer: "B) 251 K"
+        },
+        { 
+            question: "Which telescope was instrumental in the discovery of TRAPPIST-1e?",
+            options: ["A) Hubble Space Telescope", "B) Kepler Space Telescope", "C) Spitzer Space Telescope", "D) James Webb Space Telescope"],
+            answer: "C) Spitzer Space Telescope"
+        },
+        { 
+            question: "How does the size of TRAPPIST-1e compare to Earth?",
+            options: ["A) Smaller than Earth", "B) Similar to Earth", "C) Larger than Earth", "D) Twice the size of Earth"],
+            answer: "B) Similar to Earth"
+        },
+        { 
+            question: "What percentage of the energy Earth receives from the Sun does TRAPPIST-1e receive from its star?",
+            options: ["A) 30%", "B) 50%", "C) 60%", "D) 80%"],
+            answer: "C) 60%"
+        },
+        { 
+            question: "What is the estimated mass of TRAPPIST-1e compared to Earth?",
+            options: ["A) 0.5 Earth masses", "B) 0.69 Earth masses", "C) 1.0 Earth masses", "D) 1.5 Earth masses"],
+            answer: "B) 0.69 Earth masses"
+        },
+        { 
+            question: "TRAPPIST-1e is part of a system that contains how many known exoplanets?",
+            options: ["A) 5", "B) 6", "C) 7", "D) 8"],
+            answer: "C) 7"
+        }
+    ]
+}
+
+                ]
+            },   
+            
+            
+
+            
+                    {
+        name: "Proxima Centauri b",
+        description: "Proxima Centauri b, the closest known exoplanet to our Solar System, lies approximately 4.2 light-years away from Earth. This intriguing world orbits a red dwarf star and was discovered in 2016 using the radial velocity method, which measured the gravitational pull of the planet on its star. Proxima Centauri b has an estimated mass of about 1.17 times that of Earth and is situated within the habitable zone of its star, raising hopes for potential habitability. Its approximate orbital period is 11.2 days, and it has an equilibrium temperature of around 234 K. Given its proximity to its star, it is likely that Proxima Centauri b is tidally locked, presenting one side to its star at all times. This exoplanet holds significant interest for astronomers and astrobiologists alike as we continue to explore the possibilities of life beyond our home planet.",
+        color: "#FF6B6B",
+        quiz: [
+            { 
+                question: "How far is Proxima Centauri b from Earth in light-years?",
+                options: ["3.2", "4.2", "5.2", "6.2"],
+                answer: "4.2"
+            },
+            { 
+                question: "What type of star does Proxima Centauri b orbit?",
+                options: ["Red dwarf", "Yellow dwarf", "White dwarf", "Blue giant"],
+                answer: "Red dwarf"
+            },
+            { 
+                question: "In what year was Proxima Centauri b discovered?",
+                options: ["2016", "2010", "2012", "2014"],
+                answer: "2016"
+            },
+            { 
+                question: "What is the approximate orbital period of Proxima Centauri b?",
+                options: ["5.2 days", "11.2 days", "22.4 days", "33.6 days"],
+                answer: "11.2 days"
+            },
+            { 
+                question: "What is the estimated mass of Proxima Centauri b compared to Earth?",
+                options: ["0.5 Earth masses", "1.17 Earth masses", "2 Earth masses", "0.8 Earth masses"],
+                answer: "1.17 Earth masses"
+            },
+            { 
+                question: "Is Proxima Centauri b located within the habitable zone of its star?",
+                options: ["Yes", "No", "Maybe", "Unknown"],
+                answer: "Yes"
+            },
+            { 
+                question: "What method was used to discover Proxima Centauri b?",
+                options: ["Transit method", "Radial velocity method", "Direct imaging", "Gravitational microlensing"],
+                answer: "Radial velocity method"
+            },
+            { 
+                question: "What is the approximate equilibrium temperature of Proxima Centauri b?",
+                options: ["150 K", "234 K", "300 K", "350 K"],
+                answer: "234 K"
+            },
+            { 
+                question: "What is the likelihood of Proxima Centauri b being tidally locked?",
+                options: ["Unlikely", "Possible", "Likely", "Unknown"],
+                answer: "Likely"
+            },
+            { 
+                question: "Which instrument was instrumental in the discovery of Proxima Centauri b?",
+                options: ["Hubble Space Telescope", "Kepler Space Telescope", "Transiting Exoplanet Survey Satellite (TESS)", "Radial Velocity Spectrograph (HARPS)"],
+                answer: "Radial Velocity Spectrograph (HARPS)"
+            },
+            {
+            question: "How far is Proxima Centauri b from Earth in light-years?",
+                        options: ["3.2", "4.2", "5.2", "6.2"],
+                        answer: "4.2"
+                    },
+                    {
+                question: "What type of star does Proxima Centauri b orbit?",
+                        options: ["Red dwarf", "Yellow dwarf", "White dwarf", "Blue giant"],
+                        answer: "Red dwarf"
+                    },
+
+                ]
+            },
+
+
+            {
+                name: "HD 189733 b",
+                description: "HD 189733 b is a striking hot Jupiter located approximately 63 light-years from Earth, renowned for its deep blue color, which is attributed to silicate clouds in its atmosphere. With a scorching temperature of around 1,000°C, this exoplanet orbits its star—a red dwarf—every 2.2 days. The transit method was instrumental in its discovery, revealing insights into its atmospheric composition, which has been further studied using the Hubble Space Telescope. Weighing in at about 1.14 times the mass of Jupiter, HD 189733 b experiences extreme weather patterns, including high-speed winds caused by atmospheric heating. This exotic world showcases the fascinating diversity of exoplanets beyond our solar system.",
+                color: "#1E90FF",
+                quiz: [
+                    { 
+                        question: "What gives HD 189733 b its blue color?",
+                        options: ["Water", "Methane", "Silicate clouds", "Iron rain"],
+                        answer: "Silicate clouds"
+                    },
+                    { 
+                        question: "What is the temperature of HD 189733 b?",
+                        options: ["500°C", "1000°C", "1500°C", "2000°C"],
+                        answer: "1000°C"
+                    },
+                    { 
+            question: "How far is HD 189733 b from Earth in light-years?",
+            options: ["50", "63", "75", "90"],
+            answer: "63"
+        },
+        { 
+            question: "What type of exoplanet is HD 189733 b?",
+            options: ["Hot Jupiter", "Super Earth", "Mini Neptune", "Brown Dwarf"],
+            answer: "Hot Jupiter"
+        },
+        { 
+            question: "What gives HD 189733 b its deep blue color?",
+            options: ["Water", "Methane", "Silicate clouds", "Iron rain"],
+            answer: "Silicate clouds"
+        },
+        { 
+            question: "What is the approximate orbital period of HD 189733 b?",
+            options: ["1.5 days", "2.2 days", "5.0 days", "10 days"],
+            answer: "2.2 days"
+        },
+        { 
+            question: "What method was used to discover HD 189733 b?",
+            options: ["Radial velocity", "Transit method", "Direct imaging", "Gravitational microlensing"],
+            answer: "Transit method"
+        },
+        { 
+            question: "Which telescope was instrumental in studying HD 189733 b's atmosphere?",
+            options: ["Hubble Space Telescope", "Kepler Space Telescope", "Spitzer Space Telescope", "James Webb Space Telescope"],
+            answer: "Hubble Space Telescope"
+        },
+        { 
+            question: "What is the approximate temperature of HD 189733 b?",
+            options: ["500°C", "1000°C", "1500°C", "2000°C"],
+            answer: "1000°C"
+        },
+        { 
+            question: "What type of star does HD 189733 b orbit?",
+            options: ["Red dwarf", "Yellow dwarf", "White dwarf", "Blue giant"],
+            answer: "Red dwarf"
+        },
+        { 
+            question: "What is the estimated mass of HD 189733 b compared to Jupiter?",
+            options: ["0.5 Jupiter masses", "1 Jupiter mass", "1.14 Jupiter masses", "2 Jupiter masses"],
+            answer: "1.14 Jupiter masses"
+        },
+        { 
+            question: "What phenomenon causes HD 189733 b to have high-speed winds?",
+            options: ["Tidal locking", "Starspots", "Planetary magnetic field", "Atmospheric heating"],
+            answer: "Atmospheric heating"
+        }
+                ]
+            },
+
+
+
+            {
+                name: "Gliese 581c",
+                description: "Gliese 581c is a notable super-Earth located approximately 20 light-years from Earth within the Gliese 581 star system. Discovered in 2007 using the radial velocity method, this intriguing exoplanet orbits a red dwarf star and has an estimated mass around five times that of Earth. It boasts an approximate orbital period of 13 days and an estimated surface temperature of about 30°C, making it an early candidate in the search for potentially habitable planets. The HARPS spectrograph was instrumental in its discovery, highlighting the importance of advanced instruments in exoplanet research. Gliese 581c continues to be a focal point for astronomers exploring the possibilities of life beyond our Solar System.",
+                color: "#8B4513",
+                quiz: [
+                    { 
+                        question: "What is the mass of Gliese 581c compared to Earth?",
+                        options: ["2 times", "5 times", "8 times", "10 times"],
+                        answer: "5 times"
+                    },
+                    { 
+                        question: "In what year was Gliese 581c discovered?",
+                        options: ["2005", "2007", "2009", "2011"],
+                        answer: "2007"
+                    },
+                    { 
+            question: "What is the mass of Gliese 581c compared to Earth?",
+            options: ["A) 2 times", "B) 5 times", "C) 8 times", "D) 10 times"],
+            answer: "B) 5 times"
+        },
+        { 
+            question: "In what year was Gliese 581c discovered?",
+            options: ["A) 2005", "B) 2007", "C) 2009", "D) 2011"],
+            answer: "B) 2007"
+        },
+        { 
+            question: "What type of star does Gliese 581c orbit?",
+            options: ["A) Yellow dwarf", "B) Red dwarf", "C) White dwarf", "D) Blue giant"],
+            answer: "B) Red dwarf"
+        },
+        { 
+            question: "What is the approximate orbital period of Gliese 581c?",
+            options: ["A) 5 days", "B) 13 days", "C) 25 days", "D) 40 days"],
+            answer: "B) 13 days"
+        },
+        { 
+            question: "Which method was used to detect Gliese 581c?",
+            options: ["A) Transit method", "B) Radial velocity method", "C) Direct imaging", "D) Gravitational microlensing"],
+            answer: "B) Radial velocity method"
+        },
+        { 
+            question: "Approximately how far is Gliese 581c from Earth?",
+            options: ["A) 10 light-years", "B) 15 light-years", "C) 20 light-years", "D) 25 light-years"],
+            answer: "C) 20 light-years"
+        },
+        { 
+            question: "What is the estimated surface temperature of Gliese 581c?",
+            options: ["A) -50°C", "B) 0°C", "C) 30°C", "D) 60°C"],
+            answer: "C) 30°C"
+        },
+        { 
+            question: "Gliese 581c is part of which star system?",
+            options: ["A) Gliese 581", "B) Gliese 667", "C) Gliese 436", "D) Gliese 876"],
+            answer: "A) Gliese 581"
+        },
+        { 
+            question: "What is the significance of Gliese 581c in the search for habitable planets?",
+            options: ["A) First exoplanet discovered", "B) Largest known exoplanet", "C) Early candidate for habitability", "D) Closest exoplanet to Earth"],
+            answer: "C) Early candidate for habitability"
+        },
+        { 
+            question: "Which instrument was instrumental in the discovery of Gliese 581c?",
+            options: ["A) Hubble Space Telescope", "B) Kepler Space Telescope", "C) HARPS spectrograph", "D) Spitzer Space Telescope"],
+            answer: "C) HARPS spectrograph"
+        }
+                ]
+            },
+
+
+
+
+            {
+    name: "Kepler-452b",
+    description: "Kepler-452b, often dubbed Earth's cousin, is an intriguing super-Earth exoplanet located approximately 1,400 light-years away in the constellation Lyra. It orbits a G-type star, similar to our Sun, and has an approximate orbital period of 385 days, making it a prime candidate for study in the search for habitable worlds. Discovered by the Kepler Space Telescope, Kepler-452b boasts an estimated radius about 1.5 times that of Earth and a mass around five times greater. Crucially, it resides within the habitable zone of its star, raising the possibility of liquid water on its surface. The characteristics of Kepler-452b, including its similar size and orbit to Earth, highlight its significance in exoplanet studies as a potential location for extraterrestrial life.",
+    color: "#32CD32",
+    quiz: [
+        { 
+            question: "What type of star does Kepler-452b orbit?",
+            options: ["A) Red dwarf", "B) G-type star", "C) White dwarf", "D) Blue giant"],
+            answer: "B) G-type star"
+        },
+        { 
+            question: "In which constellation is Kepler-452b located?",
+            options: ["A) Cygnus", "B) Lyra", "C) Draco", "D) Orion"],
+            answer: "B) Lyra"
+        },
+        { 
+            question: "What is the approximate orbital period of Kepler-452b?",
+            options: ["A) 385 days", "B) 687 days", "C) 365 days", "D) 400 days"],
+            answer: "A) 385 days"
+        },
+        { 
+            question: "How far is Kepler-452b from Earth?",
+            options: ["A) 1,400 light-years", "B) 500 light-years", "C) 2,000 light-years", "D) 750 light-years"],
+            answer: "A) 1,400 light-years"
+        },
+        { 
+            question: "What is the significance of Kepler-452b in exoplanet studies?",
+            options: ["A) First exoplanet discovered", "B) Most massive exoplanet", "C) Earth-like super-Earth in habitable zone", "D) Closest exoplanet to Earth"],
+            answer: "C) Earth-like super-Earth in habitable zone"
+        },
+        { 
+            question: "Which telescope was responsible for discovering Kepler-452b?",
+            options: ["A) Hubble Space Telescope", "B) Kepler Space Telescope", "C) Spitzer Space Telescope", "D) James Webb Space Telescope"],
+            answer: "B) Kepler Space Telescope"
+        },
+        { 
+            question: "What is the estimated radius of Kepler-452b compared to Earth?",
+            options: ["A) 1.5 times Earth", "B) 2 times Earth", "C) 0.8 times Earth", "D) 3 times Earth"],
+            answer: "A) 1.5 times Earth"
+        },
+        { 
+            question: "Is Kepler-452b located within the habitable zone of its star?",
+            options: ["A) Yes", "B) No", "C) Maybe", "D) Unknown"],
+            answer: "A) Yes"
+        },
+        { 
+            question: "What is the estimated mass of Kepler-452b compared to Earth?",
+            options: ["A) 1 Earth mass", "B) 5 Earth masses", "C) 10 Earth masses", "D) 0.5 Earth masses"],
+            answer: "B) 5 Earth masses"
+        },
+        { 
+            question: "What makes Kepler-452b often referred to as 'Earth's cousin'?",
+            options: ["A) Similar size and orbit", "B) Identical atmospheric composition", "C) Same distance from its star as Earth", "D) Presence of liquid water"],
+            answer: "A) Similar size and orbit"
+        }
+    ]
+},
+
+
+
+{
+    name: "Ross 128 b",
+    description: "Ross 128 b orbits a red dwarf star and is located 11 light-years from Earth. It has an estimated orbital period of 9.9 days and was discovered using the radial velocity method. The estimated mass of Ross 128 b is 1.35 Earth masses, and it is located within the habitable zone of its star. The HARPS spectrograph played a key role in its discovery. This exoplanet is significant as it is the closest potentially habitable exoplanet, with an estimated surface temperature of about 10°C. Ross 128 b is part of the Ross 128 star system.",
+    color: "#800080",
+    quiz: [
+        { 
+            question: "What type of star does Ross 128 b orbit?",
+            options: ["A) G-type star", "B) Red dwarf", "C) White dwarf", "D) Blue giant"],
+            answer: "B) Red dwarf"
+        },
+        { 
+            question: "How far is Ross 128 b from Earth in light-years?",
+            options: ["A) 11 light-years", "B) 5 light-years", "C) 20 light-years", "D) 15 light-years"],
+            answer: "A) 11 light-years"
+        },
+        { 
+            question: "What is the estimated orbital period of Ross 128 b?",
+            options: ["A) 9.9 days", "B) 45 days", "C) 365 days", "D) 180 days"],
+            answer: "A) 9.9 days"
+        },
+        { 
+            question: "Which method was used to discover Ross 128 b?",
+            options: ["A) Transit method", "B) Radial velocity method", "C) Direct imaging", "D) Gravitational microlensing"],
+            answer: "B) Radial velocity method"
+        },
+        { 
+            question: "What is the estimated mass of Ross 128 b compared to Earth?",
+            options: ["A) 1 Earth mass", "B) 1.35 Earth masses", "C) 2 Earth masses", "D) 0.5 Earth masses"],
+            answer: "B) 1.35 Earth masses"
+        },
+        { 
+            question: "Is Ross 128 b located within the habitable zone of its star?",
+            options: ["A) Yes", "B) No", "C) Maybe", "D) Unknown"],
+            answer: "A) Yes"
+        },
+        { 
+            question: "Which telescope was instrumental in the discovery of Ross 128 b?",
+            options: ["A) Hubble Space Telescope", "B) Kepler Space Telescope", "C) HARPS spectrograph", "D) James Webb Space Telescope"],
+            answer: "C) HARPS spectrograph"
+        },
+        { 
+            question: "What is the significance of Ross 128 b in exoplanet studies?",
+            options: ["A) First exoplanet discovered", "B) Closest potentially habitable exoplanet", "C) Most massive exoplanet", "D) Largest known exoplanet"],
+            answer: "B) Closest potentially habitable exoplanet"
+        },
+        { 
+            question: "What is the estimated surface temperature of Ross 128 b?",
+            options: ["A) -50°C", "B) 0°C", "C) 10°C", "D) 30°C"],
+            answer: "C) 10°C"
+        },
+        { 
+            question: "Ross 128 b is part of which star system?",
+            options: ["A) Gliese 581", "B) Ross 128", "C) TRAPPIST-1", "D) Kepler-452"],
+            answer: "B) Ross 128"
+        }
+    ]
+},
+{
+    name: "WASP-12b",
+    description: "",
+    description: "WASP-12b is classified as a Hot Jupiter exoplanet, orbiting about 870 light-years away from Earth. It has an approximate orbital period of 1.1 days and was discovered using the transit method. The estimated mass of WASP-12b is about 1.4 Jupiter masses, and its atmosphere has been studied using the Hubble Space Telescope. Known for its rapid orbital decay, WASP-12b has an estimated temperature of 2,500°C. Its deep blue color is a result of reflective silicate clouds, and it orbits a K-type star.",
+    color: "#FF4500",
+    quiz: [
+        { 
+            question: "What type of exoplanet is WASP-12b?",
+            options: ["A) Super Earth", "B) Hot Jupiter", "C) Mini Neptune", "D) Brown Dwarf"],
+            answer: "B) Hot Jupiter"
+        },
+        { 
+            question: "How far is WASP-12b from Earth in light-years?",
+            options: ["A) 870 light-years", "B) 1,000 light-years", "C) 600 light-years", "D) 750 light-years"],
+            answer: "A) 870 light-years"
+        },
+        { 
+            question: "What is the approximate orbital period of WASP-12b?",
+            options: ["A) 1.1 days", "B) 3.4 days", "C) 5.2 days", "D) 7.8 days"],
+            answer: "A) 1.1 days"
+        },
+        { 
+            question: "Which method was used to discover WASP-12b?",
+            options: ["A) Transit method", "B) Radial velocity method", "C) Direct imaging", "D) Gravitational microlensing"],
+            answer: "A) Transit method"
+        },
+        { 
+            question: "What is the estimated mass of WASP-12b compared to Jupiter?",
+            options: ["A) 0.5 Jupiter masses", "B) 1 Jupiter mass", "C) 1.4 Jupiter masses", "D) 2 Jupiter masses"],
+            answer: "C) 1.4 Jupiter masses"
+        },
+        { 
+            question: "Which telescope was instrumental in studying WASP-12b's atmosphere?",
+            options: ["A) Hubble Space Telescope", "B) Kepler Space Telescope", "C) Spitzer Space Telescope", "D) James Webb Space Telescope"],
+            answer: "A) Hubble Space Telescope"
+        },
+        { 
+            question: "What phenomenon is WASP-12b known for?",
+            options: ["A) Retrograde orbit", "B) Tidal locking", "C) Rapid orbital decay", "D) Rings and moons"],
+            answer: "C) Rapid orbital decay"
+        },
+        { 
+            question: "What is the estimated temperature of WASP-12b?",
+            options: ["A) 1,200°C", "B) 1,800°C", "C) 2,500°C", "D) 3,000°C"],
+            answer: "C) 2,500°C"
+        },
+        { 
+            question: "What is the significance of WASP-12b's deep blue color?",
+            options: ["A) Presence of methane", "B) Reflective silicate clouds", "C) High water vapor content", "D) Absence of atmosphere"],
+            answer: "B) Reflective silicate clouds"
+        },
+        { 
+            question: "WASP-12b orbits which type of star?",
+            options: ["A) G-type star", "B) K-type star", "C) M-type star", "D) F-type star"],
+            answer: "B) K-type star"
+        }
+    ]
+},
+
+
+
+
+{
+    name: "LHS 1140 b",
+    description: "LHS 1140 b orbits a red dwarf star, located 40 light-years from Earth. It has an approximate orbital period of 25 days and was discovered using the radial velocity method. The planet's mass is estimated to be about 2 Earth masses, and it is located within the habitable zone of its star. The HARPS spectrograph played a key role in its discovery, making it a prime candidate for atmospheric studies. LHS 1140 b's radius is about 1.5 times that of Earth, and it is part of the LHS 1140 star system.",
+    color: "#FFD700",
+    quiz: [
+        { 
+            question: "What type of star does LHS 1140 b orbit?",
+            options: ["A) G-type star", "B) Red dwarf", "C) White dwarf", "D) Blue giant"],
+            answer: "B) Red dwarf"
+        },
+        { 
+            question: "How far is LHS 1140 b from Earth in light-years?",
+            options: ["A) 40 light-years", "B) 50 light-years", "C) 60 light-years", "D) 70 light-years"],
+            answer: "A) 40 light-years"
+        },
+        { 
+            question: "What is the approximate orbital period of LHS 1140 b?",
+            options: ["A) 10 days", "B) 25 days", "C) 50 days", "D) 100 days"],
+            answer: "B) 25 days"
+        },
+        { 
+            question: "Which method was used to discover LHS 1140 b?",
+            options: ["A) Transit method", "B) Radial velocity method", "C) Direct imaging", "D) Gravitational microlensing"],
+            answer: "B) Radial velocity method"
+        },
+        { 
+            question: "What is the estimated mass of LHS 1140 b compared to Earth?",
+            options: ["A) 1 Earth mass", "B) 1.5 Earth masses", "C) 2 Earth masses", "D) 3 Earth masses"],
+            answer: "C) 2 Earth masses"
+        },
+        { 
+            question: "Is LHS 1140 b located within the habitable zone of its star?",
+            options: ["A) Yes", "B) No", "C) Maybe", "D) Unknown"],
+            answer: "A) Yes"
+        },
+        { 
+            question: "Which telescope was instrumental in the discovery of LHS 1140 b?",
+            options: ["A) Hubble Space Telescope", "B) Kepler Space Telescope", "C) HARPS spectrograph", "D) Spitzer Space Telescope"],
+            answer: "C) HARPS spectrograph"
+        },
+        { 
+            question: "What is the significance of LHS 1140 b in exoplanet studies?",
+            options: ["A) Largest exoplanet discovered", "B) Closest exoplanet to Earth", "C) Prime candidate for atmospheric studies", "D) First exoplanet discovered"],
+            answer: "C) Prime candidate for atmospheric studies"
+        },
+        { 
+            question: "What is the estimated radius of LHS 1140 b compared to Earth?",
+            options: ["A) 1 Earth radius", "B) 1.5 Earth radii", "C) 2 Earth radii", "D) 2.5 Earth radii"],
+            answer: "B) 1.5 Earth radii"
+        },
+        { 
+            question: "LHS 1140 b is part of which star system?",
+            options: ["A) Gliese 581", "B) Ross 128", "C) LHS 1140", "D) TRAPPIST-1"],
+            answer: "C) LHS 1140"
+        }
+    ]
+},
+
+
+{
+    name: "K2-18 b",
+    description: "K2-18 b is an exoplanet orbiting a red dwarf star, located 124 light-years away from Earth. Its orbital period is approximately 103 days, and it was discovered using the transit method. With an estimated mass of 2.7 Earth masses, K2-18 b lies within its star's habitable zone. The Hubble Space Telescope detected water vapor in its atmosphere, suggesting the potential for liquid water. The planet has a radius of about 1.4 times that of Earth and is part of the K2-18 star system.",
+    color: "#00BFFF",
+    quiz: [
+        { 
+            question: "What type of star does K2-18 b orbit?",
+            options: ["A) G-type star", "B) Red dwarf", "C) White dwarf", "D) Blue giant"],
+            answer: "B) Red dwarf"
+        },
+        { 
+            question: "How far is K2-18 b from Earth in light-years?",
+            options: ["A) 124 light-years", "B) 200 light-years", "C) 300 light-years", "D) 400 light-years"],
+            answer: "A) 124 light-years"
+        },
+        { 
+            question: "What is the approximate orbital period of K2-18 b?",
+            options: ["A) 33 days", "B) 53 days", "C) 103 days", "D) 203 days"],
+            answer: "C) 103 days"
+        },
+        { 
+            question: "Which method was used to discover K2-18 b?",
+            options: ["A) Transit method", "B) Radial velocity method", "C) Direct imaging", "D) Gravitational microlensing"],
+            answer: "A) Transit method"
+        },
+        { 
+            question: "What is the estimated mass of K2-18 b compared to Earth?",
+            options: ["A) 1 Earth mass", "B) 2.7 Earth masses", "C) 5 Earth masses", "D) 10 Earth masses"],
+            answer: "B) 2.7 Earth masses"
+        },
+        { 
+            question: "Is K2-18 b located within the habitable zone of its star?",
+            options: ["A) Yes", "B) No", "C) Maybe", "D) Unknown"],
+            answer: "A) Yes"
+        },
+        { 
+            question: "Which telescope was instrumental in detecting water vapor in K2-18 b's atmosphere?",
+            options: ["A) Hubble Space Telescope", "B) Kepler Space Telescope", "C) Spitzer Space Telescope", "D) James Webb Space Telescope"],
+            answer: "A) Hubble Space Telescope"
+        },
+        { 
+            question: "What is the significance of finding water vapor in K2-18 b's atmosphere?",
+            options: ["A) Indicates volcanic activity", "B) Suggests potential for liquid water", "C) Shows presence of life", "D) Confirms planet's metallic composition"],
+            answer: "B) Suggests potential for liquid water"
+        },
+        { 
+            question: "What is the estimated radius of K2-18 b compared to Earth?",
+            options: ["A) 1 Earth radius", "B) 1.4 Earth radii", "C) 2 Earth radii", "D) 2.5 Earth radii"],
+            answer: "B) 1.4 Earth radii"
+        },
+        { 
+            question: "K2-18 b is part of which star system?",
+            options: ["A) Gliese 581", "B) K2-18", "C) Ross 128", "D) TRAPPIST-1"],
+            answer: "B) K2-18"
+        }
+    ]
+}
+        ];
+        let currentPlanetIndex = 0;
+        let currentQuestionIndex = 0;
+        let score = 0;
+
+        const planetsContainer = document.getElementById('planets-container');
+        const planetInfo = document.getElementById('planet-info');
+        const questionContainer = document.getElementById('question-container');
+        const nextButton = document.getElementById('next-button');
+
+        function initGame() {
+            displayPlanets();
+            displayPlanetInfo();
+            askQuestion();
+        }
+
+        function displayPlanets() {
+            exoplanets.forEach((planet, index) => {
+                const planetElement = document.createElement('div');
+                planetElement.className = 'planet';
+                planetElement.style.backgroundColor = planet.color;
+                planetElement.onclick = () => selectPlanet(index);
+                planetsContainer.appendChild(planetElement);
+            });
+            updateActivePlanet();
+            
+        }
+        setInterval(displayPlanets(),15);
+        function updateActivePlanet() {
+            const planets = document.querySelectorAll('.planet');
+            planets.forEach((planet, index) => {
+                if (index === currentPlanetIndex) {
+                    planet.classList.add('active');
+                } else {
+                    planet.classList.remove('active');
+                }
+            });
+        }
+
+        function selectPlanet(index) {
+            if (index !== currentPlanetIndex) {
+                currentPlanetIndex = index;
+                currentQuestionIndex = 0;
+                score = 0;
+                updateActivePlanet();
+                displayPlanetInfo();
+                askQuestion();
+                nextButton.style.display = 'none';
+            }
+        }
+
+        function displayPlanetInfo() {
+            const planet = exoplanets[currentPlanetIndex];
+            planetInfo.innerHTML = `<h2>${planet.name}</h2><p>${planet.description}</p>`;
+        }
+
+        function askQuestion() {
+            const planet = exoplanets[currentPlanetIndex];
+            const question = planet.quiz[currentQuestionIndex];
+            let optionsHTML = question.options.map(option => 
+                `<button class="answer-option" onclick="checkAnswer('${option}')">${option}</button>`
+            ).join('');
+            
+            questionContainer.innerHTML = `
+                <h3>Question ${currentQuestionIndex + 1}</h3>
+                <p>${question.question}</p>
+                ${optionsHTML}
+            `;
+        }
+
+        // function checkAnswer(userAnswer) {
+        //     const planet = exoplanets[currentPlanetIndex];
+        //     const question = planet.quiz[currentQuestionIndex];
+            
+        //     if (userAnswer === question.answer) {
+        //         score++;
+        //         questionContainer.innerHTML += '<p style="color: green;">Correct!</p>';
+        //     }
+        //      else {
+        //         questionContainer.innerHTML += `<p style="color: red;">Incorrect. The correct answer was ${question.answer}.</p>`;
+        //     }
+
+        //     currentQuestionIndex++;
+        //     if (currentQuestionIndex < planet.quiz.length) {
+        //         setTimeout(askQuestion, 1500);
+        //     } else {
+        //         endPlanetQuiz();
+        //     }
+        // }
+        function checkAnswer(userAnswer) {
+    const planet = exoplanets[currentPlanetIndex];
+    const question = planet.quiz[currentQuestionIndex];
+
+    // Normalize the answers by trimming and converting to lower case
+    const normalizedUserAnswer = userAnswer.trim().toLowerCase();
+    const normalizedCorrectAnswer = question.answer.trim().toLowerCase();  
+    if (normalizedUserAnswer === normalizedCorrectAnswer) {
+        score++;
+        questionContainer.innerHTML += '<p style="color: green;">Correct!</p>';
+    } else {
+        questionContainer.innerHTML += `<p style="color: red;">Incorrect. The correct answer was "${question.answer}".</p>`;
+    }
+
+    currentQuestionIndex++;
+    if (currentQuestionIndex < planet.quiz.length) {
+        setTimeout(askQuestion, 1500);
+    } else {
+        endPlanetQuiz();
+    }
+}
+
+
+        function endPlanetQuiz() {
+            questionContainer.innerHTML = `
+                <h3>Quiz Complete!</h3>
+                <p>You scored ${score} out of ${exoplanets[currentPlanetIndex].quiz.length} for ${exoplanets[currentPlanetIndex].name}.</p>
+            `;
+            nextButton.style.display = 'inline-block';
+        }
+
+        function moveToNextPlanet() {
+            currentPlanetIndex = (currentPlanetIndex + 1) % exoplanets.length;
+            currentQuestionIndex = 0;
+            score = 0;
+            // if(currentQuestionIndex>=7){
+            // }
+           
+        }
+        nextButton.addEventListener('click', moveToNextPlanet);
+        initGame();
+    </script>
+</div>
+</body>
+</html>
